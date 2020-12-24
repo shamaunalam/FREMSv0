@@ -76,8 +76,11 @@ WSGI_APPLICATION = 'FREMSv0.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'FREMSDB',
+        'USER' : 'postgres',
+        'PASSWORD':'@221Bbakerstreet',
+        'HOST':'localhost'
     }
 }
 

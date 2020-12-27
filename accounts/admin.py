@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Employee,EmployeeProfile
+from .models import Employee,EmployeeProfile,EmployeeAttendence
 from django.contrib.auth.admin import UserAdmin
 from django.forms import TextInput,Textarea
 # Register your models here.
@@ -35,3 +35,4 @@ class UserAdminConfig(UserAdmin):
 
 admin.site.register(Employee,UserAdminConfig)
 admin.site.register(EmployeeProfile)
+admin.site.register(EmployeeAttendence)

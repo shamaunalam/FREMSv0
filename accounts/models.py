@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django_numpy.fields import NumpyArrayField
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin,BaseUserManager
 import numpy as np
+from datetime import timedelta
 # Create your models here.
 
 class EmployeeManager(BaseUserManager):
@@ -62,8 +63,8 @@ class EmployeeProfile(models.Model):
     """
     emp = models.OneToOneField(Employee,on_delete=models.CASCADE,primary_key=True)
     first_name = models.CharField(max_length=20,blank=True)
-    last_name =  models.CharField(max_length=20)
-    phone_number = models.CharField(max_length=15)
+    last_name =  models.CharField(max_length=20,blank = True)
+    phone_number = models.CharField(max_length=15,blank = True)
     email = models.EmailField(_('email'),blank=True,null=True)
     designation = models.CharField(max_length=50,choices=(('EXE','Executive'),('SR_MGR','Senior manager'),('MGR','Manager'),('SR_ENG','Senior Engineer'),('ENG','Engineer'),('MCM','Master Craftsman'),('GET','Graduate Engineer Trainee'),('DET','Diploma Engineer Trainee'),('OJT','On Job Trainee')))
     section = models.CharField(max_length=10,choices=[('ADM','Administration'),('PRO','Production'),('TRG','Training')])
@@ -79,8 +80,14 @@ class EmployeeAttendence(models.Model):
     date = models.DateField(auto_now_add=True)
     in_time = models.TimeField(blank=True,null=True)
     out_time = models.TimeField(blank=True,null=True)
-    duration = models.DurationField(_(""))
+    duration = models.DurationField(null=True,blank=True)
     status = models.CharField(max_length=10,choices=(('A','Absent'),('P','Present'),('HF','Half Day'),('L','Leave')))
 
+    def get_duration(self):
+        
+        if self.in_time and self.out_time:
+
+            return timedelta()
+
     def __str__(self):
-        return self.employee
+        return self.employee.EmpId

@@ -77,17 +77,18 @@ class EmployeeProfile(models.Model):
 class EmployeeAttendence(models.Model):
 
     employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
-    in_time = models.TimeField(blank=True,null=True)
-    out_time = models.TimeField(blank=True,null=True)
+    date = models.DateField()
+    in_datetime = models.DateTimeField(blank=True,null=True)
+    out_datetime = models.DateTimeField(blank=True,null=True)
     duration = models.DurationField(null=True,blank=True)
     status = models.CharField(max_length=10,choices=(('A','Absent'),('P','Present'),('HF','Half Day'),('L','Leave')))
 
     def get_duration(self):
         
-        if self.in_time and self.out_time:
+        if self.in_datetime and self.out_datetime:
 
-            return timedelta()
+            tdlta = self.out_datetime - self.in_datetime
+            return tdlta
 
     def __str__(self):
         return self.employee.EmpId

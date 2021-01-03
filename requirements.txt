@@ -1,27 +1,35 @@
 absl-py==0.11.0
 asgiref @ file:///tmp/build/80754af9/asgiref_1605055780383/work
 astor==0.8.1
+astroid==2.4.2
 cached-property==1.5.2
 certifi==2020.12.5
+colorama==0.4.4
 cycler==0.10.0
 Django @ file:///tmp/build/80754af9/django_1606860386887/work
+django-numpy @ git+https://github.com/perdy/django-numpy.git@d643f5db23e96f7e12c49e11fa87d9eaccf1aa74
 gast==0.4.0
 google-pasta==0.2.0
 grpcio==1.34.0
-h5py==3.1.0
+h5py==2.10.0
 importlib-metadata==3.1.1
+isort==5.6.4
 Keras==2.2.4
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
+keras-vggface==0.6
 kiwisolver==1.3.1
+lazy-object-proxy==1.4.3
 Markdown==3.3.3
 matplotlib==3.3.3
+mccabe==0.6.1
 numpy==1.19.4
 opencv-python==4.4.0.46
 pandas==1.1.5
 Pillow==8.0.1
 protobuf==3.14.0
 psycopg2 @ file:///C:/ci/psycopg2_1594305209841/work
+pylint==2.6.0
 pyparsing==2.4.7
 python-dateutil==2.8.1
 pytz @ file:///tmp/build/80754af9/pytz_1606604771399/work
@@ -33,6 +41,8 @@ tensorboard==1.14.0
 tensorflow==1.14.0
 tensorflow-estimator==1.14.0
 termcolor==1.1.0
+toml==0.10.2
+typed-ast==1.4.1
 Werkzeug==1.0.1
 wincertstore==0.2
 wrapt==1.12.1

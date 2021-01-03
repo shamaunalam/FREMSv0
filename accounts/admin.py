@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from .models import Employee,EmployeeProfile,EmployeeAttendence
+from .models import Employee,EmployeeProfile,EmployeeFaceData
 from django.contrib.auth.admin import UserAdmin
 from django.forms import TextInput,Textarea
 # Register your models here.
@@ -16,7 +16,7 @@ class UserAdminConfig(UserAdmin):
     list_display = ('EmpId',
     'full_name','is_active','is_staff')
     fieldsets = (
-        (None,{'fields':('EmpId','full_name')}),
+        (None,{'fields':('EmpId','full_name','password')}),
         ('Permissions',{'fields':('is_staff','is_active','is_superuser','groups')}),
     )
     add_fieldsets = (
@@ -34,23 +34,7 @@ class UserAdminConfig(UserAdmin):
 
         return form
 
-class EmployeeAttendenceConfig(admin.ModelAdmin):
-
-    model = EmployeeAttendence
-    search_fields = ("EmpId",'date')
-    ordering = ('-date',)
-    list_display = ('date','get_eid','get_name','in_datetime','out_datetime','duration','status')
-    
-    def get_eid(self,obj):
-        return obj.employee.EmpId
-
-    def get_name(self,obj):
-        return obj.employee.full_name
-    get_eid.short_description = 'Person Number'  #Renames column head
-    get_name.short_description = 'Person Name'
-
-
-
 admin.site.register(Employee,UserAdminConfig)
 admin.site.register(EmployeeProfile)
-admin.site.register(EmployeeAttendence,EmployeeAttendenceConfig)
+admin.site.register(EmployeeFaceData)
+#admin.site.register(EmployeeAttendence,EmployeeAttendenceConfig)

@@ -34,7 +34,16 @@ class UserAdminConfig(UserAdmin):
 
         return form
 
+class EmployeFaceDataConfig(admin.ModelAdmin):
+    model = EmployeeFaceData
+    list_display = ['employee']
+    def get_form(self,request,obj=None,**kwargs):
+        form = super().get_form(request,obj,**kwargs)
+        form.base_fields['employee'].disabled = True
+        form.base_fields['embeddings'].disabled = True
+        return form
+
 admin.site.register(Employee,UserAdminConfig)
 admin.site.register(EmployeeProfile)
-admin.site.register(EmployeeFaceData)
+admin.site.register(EmployeeFaceData,EmployeFaceDataConfig)
 #admin.site.register(EmployeeAttendence,EmployeeAttendenceConfig)

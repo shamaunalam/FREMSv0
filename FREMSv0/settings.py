@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from keras.engine import  Model
 from keras.layers import Input
 from keras_vggface.vggface import VGGFace
-
+import tensorflow as tf
 from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 #building the face embedding model
 MODEL = VGGFace(model='resnet50', include_top=False, input_shape=(224, 224, 3), pooling='avg')
-
+GRAPH = tf.get_default_graph()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 

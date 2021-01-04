@@ -1,10 +1,47 @@
-from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
-from .models import Employee
+from django.core.exceptions import PermissionDenied
+from keras_vggface.utils import preprocess_input
+from django.shortcuts import render,redirect
+from django.conf import settings
+from .models import Employee,EmployeeFaceData
+import numpy as np
 import cv2
+import os
+import io
 # Create your views here.
+
+"""Helper functions and loading importing keras model instance from settings"""
+model = settings.MODEL
+graph = settings.GRAPH
+cascade = cv2.CascadeClassifier(os.path.join(settings.BASE_DIR,'accounts/haarcascade_frontalface_alt.xml'))
+def capture_face():
+        cap = cv2.VideoCapture(0)
+        while True:
+
+            ret,frame = cap.read()
+
+            faces = cascade.detectMultiScale(frame)
+
+            for x,y,w,h in faces:
+                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),3)
+
+            cv2.imshow('camera',frame)
+
+            if cv2.waitKey(1)==ord('q'):
+                face_img = frame[y:y+h,x:x+w]
+                face_img = cv2.resize(face_img,(224,224))
+                face_img = np.asarray(face_img,'float64')
+                face_img = face_img.reshape(1,224,224,3)
+                face_img = preprocess_input(face_img,version=2)
+                with graph.as_default():
+                    yhat = model.predict(face_img)
+                yhat = io.BytesIO(yhat)
+                yhat = yhat.getvalue()
+                break
+        cap.release()
+        cv2.destroyAllWindows()
+        return yhat
 
 def Dashboard(request):
 
@@ -50,32 +87,22 @@ def Logout(request):
 def Register(request):
     if request.user.is_staff:
         if request.method=="POST":
-            capture_face(request)
+            yhat  = capture_face()
             EmpId,full_name,password_1,password_2 = request.POST['EmpId'],request.POST['full_name'],request.POST['password_1'],request.POST['password_2']
             if password_1==password_2:
                 emp = Employee.objects.filter(EmpId=EmpId)
                 if not emp:
                     emp = Employee.objects.create_user(EmpId,full_name,password_2)
                     emp.save()
+                    empface = EmployeeFaceData(employee=emp,embeddings=yhat)
+                    empface.save()
+                else:
+                    empface = EmployeeFaceData(employee=emp[0],embeddings=yhat)
+                    empface.save()
+                    print('face captured')
                 return redirect('dashboard')
     else:
         raise PermissionDenied
 
     return render(request,'register.html')
 
-@login_required(login_url='login')
-def capture_face(request):
-    if request.user.is_staff:
-        cap = cv2.VideoCapture(0)
-
-        while True:
-
-            ret,frame = cap.read()
-
-            cv2.imshow('camera',frame)
-
-            if cv2.waitKey(1)==ord('q'):
-                break
-        cap.release()
-        cv2.destroyAllWindows()
-    return redirect('dashboard')

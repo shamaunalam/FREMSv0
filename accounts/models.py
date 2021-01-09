@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
-from django_numpy.fields import NumpyArrayField
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin,BaseUserManager
 import numpy as np
 from datetime import timedelta
@@ -76,4 +75,4 @@ class EmployeeProfile(models.Model):
 
 class EmployeeFaceData(models.Model):
     employee = models.OneToOneField(Employee,on_delete=models.CASCADE,primary_key=True)
-    embeddings = models.TextField()
+    embeddings = ArrayField(base_field=models.FloatField())

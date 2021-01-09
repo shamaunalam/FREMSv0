@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from keras_vggface.utils import preprocess_input
 from django.shortcuts import render,redirect
 from django.conf import settings
+from django.contrib import messages
 from .models import Employee,EmployeeFaceData
 import numpy as np
 import cv2
@@ -15,30 +16,43 @@ import io
 model = settings.MODEL
 graph = settings.GRAPH
 cascade = cv2.CascadeClassifier(os.path.join(settings.BASE_DIR,'accounts/haarcascade_frontalface_alt.xml'))
+
+def preprocess_image(image):
+    image = cv2.resize(image,(224,224))
+    image = np.asarray(image,'float64')
+    image = image.reshape(1,224,224,3)
+    image = preprocess_input(image,version=2)
+    return image
+
+def get_embedding(image,model=model,graph=graph):
+    image = preprocess_image(image)
+    try:
+        with graph.as_default():
+            yhat = model.predict(image)
+        yhat = yhat.reshape(2048)
+        yhat = list(yhat)
+    except:
+        yhat = None
+    return yhat
+
 def capture_face():
+    #opens the attatched web-camera to capture face embeddings
+    #returns embeddings ( 2048 element vector encoded in BytesIO,datatype of array is float32 )
         cap = cv2.VideoCapture(0)
         while True:
-
             ret,frame = cap.read()
-
             faces = cascade.detectMultiScale(frame)
-
-            for x,y,w,h in faces:
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),3)
-
+            if len(faces)>0:
+                for x,y,w,h in faces:
+                    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),3)
             cv2.imshow('camera',frame)
-
             if cv2.waitKey(1)==ord('q'):
-                face_img = frame[y:y+h,x:x+w]
-                face_img = cv2.resize(face_img,(224,224))
-                face_img = np.asarray(face_img,'float64')
-                face_img = face_img.reshape(1,224,224,3)
-                face_img = preprocess_input(face_img,version=2)
-                with graph.as_default():
-                    yhat = model.predict(face_img)
-                yhat = io.BytesIO(yhat)
-                yhat = yhat.getvalue()
-                break
+                if len(faces)>0:
+                    face_img = frame[y:y+h,x:x+w]
+                    yhat = get_embedding(face_img)
+                    break
+                else:
+                    break
         cap.release()
         cv2.destroyAllWindows()
         return yhat
@@ -78,7 +92,6 @@ def Logout(request):
     #logs out the current user, by calling 
     #django.contrib.auth logout(request)
     #redirects to Login view.
-
     if request.user is not None:
         logout(request)
         return redirect('login')
@@ -96,10 +109,11 @@ def Register(request):
                     emp.save()
                     empface = EmployeeFaceData(employee=emp,embeddings=yhat)
                     empface.save()
+                    messages.success(request,'employee successfully added')
                 else:
                     empface = EmployeeFaceData(employee=emp[0],embeddings=yhat)
                     empface.save()
-                    print('face captured')
+                    messages.success(request,'face data captured')
                 return redirect('dashboard')
     else:
         raise PermissionDenied

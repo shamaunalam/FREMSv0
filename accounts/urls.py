@@ -6,4 +6,7 @@ urlpatterns = [
     path('login',views.Login,name='login'),
     path('logout',views.Logout,name='logout'),
     path('register',views.Register,name='register'),
+    path('getallfacedata',views.employeeFaceApi,name='employeeFaceApi'),
+    path('getallemployee',views.employeeApi,name='employeeApi'),
+    path('getallprofile',views.employeeProfileApi,name='employeeProfileApi'),
 ]

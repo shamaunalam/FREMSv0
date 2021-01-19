@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-    'attendence.apps.AttendenceConfig'
+    'attendence.apps.AttendenceConfig',
+    'rest_framework',
 ]
 AUTH_USER_MODEL = 'accounts.Employee'
 MIDDLEWARE = [

@@ -5,11 +5,18 @@ from keras_vggface.utils import preprocess_input
 from django.shortcuts import render,redirect
 from django.conf import settings
 from django.contrib import messages
-from .models import Employee,EmployeeFaceData
+from .models import Employee,EmployeeFaceData,EmployeeProfile
 import numpy as np
 import cv2
 import os
 import io
+
+#rest_framework imports
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .serializers import EmployeeFaceDataSerializer,EmployeeSerializer,EmployeeProfileSerializer
+
 # Create your views here.
 
 """Helper functions and loading importing keras model instance from settings"""
@@ -120,3 +127,22 @@ def Register(request):
 
     return render(request,'register.html')
 
+
+# api_views below
+@api_view(['GET'])
+def employeeFaceApi(request):
+    empface = EmployeeFaceData.objects.all()
+    serializer = EmployeeFaceDataSerializer(empface,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def employeeApi(request):
+    emp = Employee.objects.all()
+    serializer = EmployeeSerializer(emp,many=True)
+    return Response(serializer.data)
+    
+@api_view(['GET'])
+def employeeProfileApi(request):
+    emppro = EmployeeProfile.objects.all()
+    serializer = EmployeeProfileSerializer(emppro,many=True)
+    return Response(serializer.data)
